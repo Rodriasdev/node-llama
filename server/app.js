@@ -11,16 +11,14 @@ const model = new LlamaModel({
     modelPath: path.join(__dirname, "models", "notus-7b-v1.Q4_K_M.gguf")
 })
 
+const context = new LlamaContext({model});
+const session = new LlamaChatSession({context});
 
 const app = express();
 const server = createServer();
 const io = new Server(server);
 
 const PORT = process.env.PORT || 4000;
-
-app.get('/test', (_,res) => {
-    res.send('test');
-});
 
 app.listen(PORT, () => {
     console.log('server on in port' + PORT);
