@@ -4,7 +4,7 @@ import './App.css'
 function App() {
   const [stateQuestion, setStateQuestion] = useState('')
   const [stateChat, setStateChat] = useState([])
-
+  const [stateBoxChat, setStateBoxChat] = useState(false)
   const sendQuestion = async () => {
     // const response = await fetch('http://localhost:4000/chat')
 
@@ -12,7 +12,9 @@ function App() {
 
     setStateChat([...stateChat, stateQuestion])
 
-    console.log(stateChat);
+    if(stateChat.length > 20){
+      setStateBoxChat(true)
+    }
   }
 
 
@@ -24,12 +26,15 @@ function App() {
   return (
     <div className='container'>
       <h1 className='text-center'>Chat</h1>
-      <div className='boxChat border'>
-        {stateChat.map((msg, index) => (
-          <div className={index % 2 === 0 ? 'text-end me-2': 'text-start ms-2'}>{
-            msg
-          }</div>
-        ))}
+      <div className='justify-content-center d-flex'>
+        
+        <div className='boxChat border' style={!stateBoxChat ? {height: '78vh'}: {height:'100%'}}>
+          {stateChat.map((msg, index) => (
+            <div className={index % 2 === 0 ? 'text-end me-2': 'text-start ms-2'}>
+              {msg}
+              </div>
+          ))}
+        </div>
       </div>
       <div className='d-flex justify-content-center mt-3'>
         <input type="text" className='rounded w-50' defaultValue={stateQuestion} onChange={handleChange}/>
