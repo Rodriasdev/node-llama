@@ -29,8 +29,29 @@ const response = await session.prompt('Hola');
 
 
 const app = express();
-const server = createServer();
-const io = new Server(server);
+const server = createServer(app);
+const io = new SocketIOServer(server);
+
+
+io.on('connection', (socket) => {
+    console.log('Un usuario se ha conectado');
+
+  
+    socket.on('mensaje', (data) => {
+        console.log('Mensaje recibido: ', data);
+   
+        socket.emit('respuesta', { mensaje: 'Mensaje recibido' });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Un usuario se ha desconectado');
+    });
+});
+
+
+app.get('/', (_req, res) => {
+    res.send('Servidor funcionando');
+});
 
 const PORT = process.env.PORT || 4000;
 
