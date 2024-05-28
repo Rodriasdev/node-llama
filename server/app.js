@@ -5,34 +5,53 @@ import {LlamaModel, LlamaContext, LlamaChatSession} from "node-llama-cpp";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const model = new LlamaModel({
     modelPath: path.join(__dirname, "models", "notus-7b-v1.Q4_K_M.gguf")
-})
-
-const context = new LlamaContext({model});
-const session = new LlamaChatSession({context});
+});
 
 
-const q1 = "Hi there, how are you?";
-console.log("User: " + q1);
-
-const a1 = await session.prompt(q1);
-console.log("AI: " + a1);
-
-
-const q2 = "Summerize what you said";
-console.log("User: " + q2);
-
-const a2 = await session.prompt(q2);
-console.log("AI: " + a2);
+const context = new LlamaContext({
+    model,
+    maxLength: 2048,
+    temperature: 0.7, 
+    top_p: 0.9 
+});
 
 
+const session = new LlamaChatSession({
+    context,
+    initialPrompt: "Eres un psicologo"
+});
 
-// const app = express();
-// const server = createServer();
-// const io = new Server(server);
+const response = await session.prompt('Hola');
+
+
+const app = express();
+const server = createServer(app);
+const io = new SocketIOServer(server);
+
+
+io.on('connection', (socket) => {
+    console.log('Un usuario se ha conectado');
+
+  
+    socket.on('mensaje', (data) => {
+        console.log('Mensaje recibido: ', data);
+   
+        socket.emit('respuesta', { mensaje: 'Mensaje recibido' });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Un usuario se ha desconectado');
+    });
+});
+
+
+app.get('/', (_req, res) => {
+    res.send('Servidor funcionando');
+});
 
 // const PORT = process.env.PORT || 4000;
 
